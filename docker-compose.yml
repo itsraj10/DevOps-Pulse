@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  devops-pulse-ai:
+    build: .
+    container_name: devops-pulse-ai
+    ports:
+      - "8080:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./styles.css:/usr/share/nginx/html/styles.css
+      - ./data.js:/usr/share/nginx/html/data.js
+      - ./app.js:/usr/share/nginx/html/app.js
+    restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: devops-cloudflared
+    command: tunnel --url http://devops-pulse-ai:80
+    restart: unless-stopped
+    depends_on:
+      - devops-pulse-ai
